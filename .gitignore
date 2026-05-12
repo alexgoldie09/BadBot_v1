@@ -41,6 +41,9 @@
 *.VC.db
 *.VC.opendb
 
+# User-specific files
+*.DS_Store
+
 # Precompiled Assets
 SourceArt/**/*.png
 SourceArt/**/*.tga
