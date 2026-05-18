@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "BlasterBolt.generated.h"
 
 UCLASS()
@@ -15,6 +17,9 @@ public:
 	// Sets default values for this actor's properties
 	ABlasterBolt();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bolt|Effects")
+	UNiagaraSystem* ImpactEffect = nullptr;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -22,5 +27,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+private:
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, 
+				UPrimitiveComponent* OtherComp, FVector NormalImpulse, 
+				const FHitResult& Hit);
 
 };

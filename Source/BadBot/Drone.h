@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Drone.generated.h"
 
 UCLASS()
@@ -20,23 +22,33 @@ public:
 	TSubclassOf<AActor> BlasterBoltClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Combat")
+	float AttackRange = 1000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Combat")
 	float FireRate = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Combat")
 	float Damage = 10.0f;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Drone|Combat")
-	bool bFireLeft = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Combat")
+	bool bAlternatefire = true;
+
+	// Audio & Effects
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Combat")
+	UNiagaraSystem* MuzzleFlashEffect = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Combat")
+	USoundBase* FireSound = nullptr;
 
 	// Mesh and Sockets
 	UPROPERTY(BlueprintReadOnly, Category = "Drone|Combat")
 	UStaticMeshComponent* DroneMesh = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Drone|Combat")
-	FVector SocketRifleL;
+	FTransform SocketRifleL;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Drone|Combat")
-	FVector SocketRifleR;
+	FTransform SocketRifleR;
 
 	// Movement
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Movement")
@@ -54,10 +66,10 @@ public:
 
 	// Public functions
 	UFUNCTION(BlueprintCallable, Category = "Drone|Combat")
-	void SpawnBlasterBolt(FVector SpawnLocation);
+	void SpawnBlasterBolt(FTransform SpawnTransform);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Drone|Combat")
-	void OnReadyToFire();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Drone")
+	void OnTargetFound();
 	
 protected:
 	// Called when the game starts or when spawned

@@ -32,24 +32,21 @@ void ADrone::Tick(float DeltaTime)
 
 	if (DroneMesh)
 	{
-		SocketRifleL = DroneMesh->GetSocketLocation(FName("Rifle_L"));
-		SocketRifleR = DroneMesh->GetSocketLocation(FName("Rifle_R"));
-	}
-
-	FireTimer += DeltaTime;
-	if (FireTimer >= FireRate)
-	{
-		FireTimer = 0.0f;
-		OnReadyToFire();
+		SocketRifleL = DroneMesh->GetSocketTransform(FName("Rifle_L"));
+		SocketRifleR = DroneMesh->GetSocketTransform(FName("Rifle_R"));
 	}
 }
 
 void ADrone::FindPlayerPawn()
 {
 	TargetPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+	if (!TargetPawn) return;
+
+	OnTargetFound();
 }
 
-void ADrone::SpawnBlasterBolt(FVector SpawnLocation)
+void ADrone::SpawnBlasterBolt(FTransform SpawnTransform)
 {
 	if (!TargetPawn) return;
 	if (!BlasterBoltClass) return;
@@ -58,8 +55,32 @@ void ADrone::SpawnBlasterBolt(FVector SpawnLocation)
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
 
+	FVector SpawnLocation = SpawnTransform.GetLocation();
 	FRotator SpawnRotation = (TargetPawn->GetActorLocation() - SpawnLocation).Rotation();
 
 	GetWorld()->SpawnActor<AActor>(BlasterBoltClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+	if (MuzzleFlashEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			MuzzleFlashEffect,
+			SpawnLocation,
+			SpawnTransform.GetRotation().Rotator(),
+			FVector(1.0f),
+			true,    // auto destroy
+			true,    // auto activate
+			ENCPoolMethod::None
+		);
+	}
+
+	if (FireSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			FireSound,
+			SpawnLocation
+		);
+	}
 }
 
