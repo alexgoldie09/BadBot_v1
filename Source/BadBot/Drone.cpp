@@ -42,7 +42,7 @@ void ADrone::FindPlayerPawn()
 	TargetPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
 	if (!TargetPawn) return;
-
+	
 	OnTargetFound();
 }
 
@@ -56,7 +56,7 @@ void ADrone::SpawnBlasterBolt(FTransform SpawnTransform)
 	SpawnParams.Instigator = GetInstigator();
 
 	FVector SpawnLocation = SpawnTransform.GetLocation();
-	FRotator SpawnRotation = (TargetPawn->GetActorLocation() - SpawnLocation).Rotation();
+	FRotator SpawnRotation = SpawnTransform.GetRotation().Rotator();
 
 	GetWorld()->SpawnActor<AActor>(BlasterBoltClass, SpawnLocation, SpawnRotation, SpawnParams);
 

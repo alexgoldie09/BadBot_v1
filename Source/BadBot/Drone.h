@@ -53,6 +53,9 @@ public:
 	// Movement
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Movement")
 	float MoveSpeed = 5.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Movement")
+	float ChaseRange = 500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drone|Movement")
 	float RotateSpeed = 5.0f;
@@ -67,6 +70,9 @@ public:
 	// Public functions
 	UFUNCTION(BlueprintCallable, Category = "Drone|Combat")
 	void SpawnBlasterBolt(FTransform SpawnTransform);
+	
+	UFUNCTION(BlueprintCallable, Category = "Drone")
+	void FindPlayerPawn();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Drone")
 	void OnTargetFound();
@@ -81,5 +87,4 @@ public:
 	
 private:
 	float FireTimer = 0.0f;
-	void FindPlayerPawn();
 };

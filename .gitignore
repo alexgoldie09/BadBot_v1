@@ -75,3 +75,5 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+Content/Assets/LevelSphere/TC_Skybox_03.uasset
+Content/Assets/LevelSphere/TC_Skybox_05.uasset

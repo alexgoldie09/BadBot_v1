@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "BlasterBolt.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABlasterBolt::ABlasterBolt()
@@ -18,7 +18,7 @@ void ABlasterBolt::BeginPlay()
 
 	if (UStaticMeshComponent* BoltMesh = FindComponentByClass<UStaticMeshComponent>())
 	{
-		BoltMesh->SetNotifyRigidBodyCollision(true);
+		// BoltMesh->SetNotifyRigidBodyCollision(true);
 		BoltMesh->OnComponentHit.AddDynamic(this, &ABlasterBolt::OnHit);
 	}
 }
@@ -31,30 +31,33 @@ void ABlasterBolt::Tick(float DeltaTime)
 }
 
 void ABlasterBolt::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-						  UPrimitiveComponent* OtherComp, FVector NormalImpulse,
-						  const FHitResult& Hit)
+                          UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+                          const FHitResult& Hit)
 {
-	if (ImpactEffect)
-	{
-		FRotator ImpactRotation = Hit.ImpactNormal.Rotation();
+    if (!OtherActor) return;
+    if (OtherActor == GetOwner()) return;
 
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			ImpactEffect,
-			Hit.ImpactPoint,
-			ImpactRotation,
-			FVector(1.0f),
-			true,
-			true,
-			ENCPoolMethod::None
-		);
-	}
+    if (ImpactEffect)
+    {
+        FRotator ImpactRotation = Hit.ImpactNormal.Rotation();
 
-	if (APawn* HitPawn = Cast<APawn>(OtherActor))
-	{
-		UGameplayStatics::OpenLevel(GetWorld(), FName(GetWorld()->GetMapName()));
-	}
-    
-	Destroy();
+        UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+            GetWorld(),
+            ImpactEffect,
+            Hit.ImpactPoint,
+            ImpactRotation,
+            FVector(1.0f),
+            true,
+            true,
+            ENCPoolMethod::None
+        );
+    }
+
+    if (APawn* HitPawn = Cast<APawn>(OtherActor))
+    {
+        UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, false);
+    }
+
+    Destroy();
 }
 
